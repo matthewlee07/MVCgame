@@ -8,7 +8,7 @@ class Game
     @O = "O" #human
     @symbol
     @current_turn = @O
-    @space
+    @spot
     @difficulty
   end
 
@@ -21,8 +21,8 @@ class Game
   end
 
   def move(space)
-    @space = space
-    @board[@space] = @current_turn
+    @spot = space
+    @board[@spot] = @current_turn
   end
 
   def get_computer_move
@@ -33,40 +33,76 @@ class Game
     @board[space] != "X" && @board[space] != "O"
   end
 
+  # def get_best_space
+  #   available_spaces = get_available_spaces
+  #   if @difficulty == 1
+  #     best_move = nil
+  #     available_spaces.each do |space|
+  #       best_move = space.to_i
+  #       @board[best_move] = @current_turn
+  #       if winning_space?(space)
+  #         puts "winnging move"
+  #         @board[space.to_i] = space
+  #         return best_move
+  #       elsif block_win?(space)
+  #         puts "block move"
+  #         @board[space.to_i] = space
+  #         return best_move
+  #       elsif block_fork?(space)
+  #         puts "block fork move"
+  #         @board[space.to_i] = space
+  #         return best_move
+  #       else
+  #         @board[best_move] = space
+  #       end
+  #     end
+  #   end
+  #   puts "random move"
+  #   get_random_space
+  # end
+
+  # def winning_space?(space)
+  #   puts "checking winning #{@current_turn} move"
+  #   move(space.to_i)
+  #   winner
+  # end
+  # --------------------------
   def get_best_space
-    available_spaces = get_available_spaces
+    best_space = get_random_space
     if @difficulty == 1
-      best_move = nil
-      available_spaces.each do |space|
-        best_move = space.to_i
-        @board[best_move] = @current_turn
-        if winning_move?(space)
-          puts "winnging move"
-          @board[space.to_i] = space
-          return best_move
-        elsif block_win?(space)
-          puts "block move"
-          @board[space.to_i] = space
-          return best_move
-        elsif block_fork?(space)
-          puts "block fork move"
-          @board[space.to_i] = space
-          return best_move
-        else
-          @board[best_move] = space
-        end
+      # if any of the spaces is a winner then return best_space
+      if winning_space?
+        return best_space
+        # elseif any of the spaces is a block_win then return best_space
+        # elsif block_win?
+        #   return best_space
+        #   # elseif any of the spaces is a block_fork then return best space
+        # elsif block_fork?
+        #   return best_space
       end
     end
-    puts "random move"
-    get_random_space(available_spaces)
+    best_space
   end
 
-  def winning_move?(space)
-    puts "checking winning #{@current_turn} move"
-    move(space.to_i)
-    winner
+  # receives array of available spaces
+  # returns boolean of if there's a space which will win
+  def winning_space?
+    available_spaces = get_available_spaces
+    available_spaces.each do |space|
+      puts "checking winning #{@current_turn} move: #{space}"
+      move(space.to_i)
+      if winner
+        return true
+      else
+        puts "replace board..."
+        @board[space.to_i] = space
+        puts @board
+      end
+    end
+    return false
   end
 
+  # --------------------------
   def block_win?(space)
     puts "checking blocking move"
     switch_turns
@@ -90,8 +126,8 @@ class Game
     return available_spaces
   end
 
-  def get_random_space(available_spaces)
-    return available_spaces.sample.to_i
+  def get_random_space
+    return get_available_spaces.sample.to_i
   end
 
   def game_is_over
