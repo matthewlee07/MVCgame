@@ -33,9 +33,27 @@ class Game
     @board[space] != "X" && @board[space] != "O"
   end
 
+  # receives nothing, returns integer
   def get_best_space
-    puts "random move"
-    get_random_space
+    best_space = false
+    if @difficulty == 1
+      if winning_move?
+        puts "winning_move best_space: #{best_space}"
+        return best_space
+      end
+    end
+    puts "best_space or random_space"
+    best_space ? best_space : get_random_space
+  end
+
+  # receives nothing, return bool. sets @space via move method
+  def winning_move?
+    get_available_spaces.each do |space|
+    end
+  end
+
+  def reset_move(space)
+    @board[space.to_i] = space
   end
 
   #receives board array, returns array of available spaces
